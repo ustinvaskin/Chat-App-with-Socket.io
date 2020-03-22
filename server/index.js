@@ -1,41 +1,51 @@
-// Require all nessesery dependencsies 
-// import using require 
+const http = require('http');
+const express = require('express');
+const socketio = require('socket.io');
+const cors = require('cors');
 
-const express = require('express')
-const socketio = require('socket.io')
-const http = require('http')
-// https://socket.io/docs/#Using-with-Node-http-server socket io documentation usging with node http server 
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./users');
 
-//Specifying port 
-const PORT = process.env.PORT || 5000
+const router = require('./router');
 
-// requiring router from router.js 
-const router = require('./router')
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
 
-const app = express()
-//Workign with socket io 
-const server = http.createServer(app) // create server itialise socket io 
-const io = socketio(server) // instance of the socket io 
-// now we have socketio instanse that we will be using
+app.use(cors());
+app.use(router);
 
+io.on('connect', (socket) => {
+  socket.on('join', ({ name, room }, callback) => {
+    const { error, user } = addUser({ id: socket.id, name, room });
 
-// Socket io code: 
+    if(error) return callback(error);
 
-io.on('connection', (socket) => {
-  console.log('We have a new connection!!!!')
+    socket.join(user.room);
+
+    socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.`});
+    socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
+
+    io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+
+    callback();
+  });
+
+  socket.on('sendMessage', (message, callback) => {
+    const user = getUser(socket.id);
+
+    io.to(user.room).emit('message', { user: user.name, text: message });
+
+    callback();
+  });
+
   socket.on('disconnect', () => {
-    console.log('User just left!!!')
+    const user = removeUser(socket.id);
+
+    if(user) {
+      io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
+      io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
+    }
   })
+});
 
-})
-
-
-
-
-//We can call our router as a middleweare 
-app.use(router)
-
-// run the server 
-server.listen(PORT, () => console.log(`Server has started on port ${PORT}`)) // terminal cd client // npm start
-
-
+server.listen(process.env.PORT || 5000, () => console.log(`Server has started.`));

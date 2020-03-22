@@ -1,12 +1,8 @@
-const express = require('express') // express 
-const router = express.Router() // getting router and immeidetly calling it 
+const express = require("express");
+const router = express.Router();
 
-// get request 
+router.get("/", (req, res) => {
+  res.send({ response: "Server is up and running." }).status(200);
+});
 
-router.get('/', (req, res) => {
-  res.send('server is up and running')
-})
-
-
-//export it 
-module.exports = router
+module.exports = router;

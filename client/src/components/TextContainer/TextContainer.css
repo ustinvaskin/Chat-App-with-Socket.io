@@ -1,0 +1,21 @@
+.card{
+  background-color: #53354a;
+  border-radius: 20px;
+}
+
+
+.title{
+  color: white;
+}
+
+.fa-circle{
+  margin: 0px 10px;
+}
+
+h1, h2{
+  margin: 20px 0px;
+}
+
+.fa-comments{
+  margin-left: 25px;
+}

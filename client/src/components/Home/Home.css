@@ -1,0 +1,44 @@
+html, body {
+  height: 100%;
+
+}
+
+body {
+	overflow: hidden;
+}
+
+.box {
+	max-width: 70vw;
+	padding: 30px;
+	margin: 0 auto;
+	position: relative;
+	top: 50%;
+	font-size: 30px;
+	line-height: 1.5;
+	transform: translateY(-50%);
+	perspective: 400px;
+}
+
+
+.fa-comments {
+  margin: 0px 30px;
+  color: #903749;
+}
+
+
+.fa-user-friends{
+  margin: 0px 30px;
+  color: #53354a;
+}
+
+.fa-paragraph{
+  margin: 0px 30px;
+  color: #2b2e4a;
+}
+
+span{
+  font-size: 3rem;
+  margin-left: 20px;
+  color: #903749;
+}
+
